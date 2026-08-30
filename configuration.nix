@@ -5,6 +5,10 @@
 { config, pkgs, ... }:
 
 {
+  nixpkgs.overlays = [
+      (builtins.getFlake "github:m15a/flake-awesome-neovim-plugins").overlays.default
+  ];
+
   imports =
     [ # Include the results of the hardware scan.
       /etc/nixos/hardware-configuration.nix
@@ -28,6 +32,15 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+
+  services.openvpn.servers = {
+    /*
+      officeVPN = {
+        config = '' config /home/branden/Documents/profile-5758371897905599291.ovpn '';
+        updateResolvConf = true;
+      };
+    */
+  };
 
   virtualisation.docker.enable = true;
 
@@ -58,8 +71,13 @@
   services.xserver.enable = true;
 
   # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  services.desktopManager.gnome.enable = true;
+
+  services.displayManager.gdm.enable = true;
+  services.displayManager.autoLogin = {
+    enable = true;
+    user = "branden";
+  };
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -69,6 +87,12 @@
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
+
+  # Bluetooth settings
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+  };
 
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
@@ -155,6 +179,7 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "26.05"; # Did you read the comment?
 
-  home-manager.users."branden" = import ../home-manager/home.nix;
+  home-manager.users."branden" = import ../home-manager/home.nix { inherit pkgs; };
+
   home-manager.useGlobalPkgs = true;
 }
