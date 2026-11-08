@@ -7,6 +7,7 @@
 {
   nixpkgs.overlays = [
       (builtins.getFlake "github:m15a/flake-awesome-neovim-plugins").overlays.default
+      (builtins.getFlake "github:osipog/nix-firefox-addons").overlays.default
   ];
 
   imports =
@@ -40,6 +41,10 @@
         updateResolvConf = true;
       };
     */
+  };
+
+  services.tailscale = {
+    enable = true;
   };
 
   virtualisation.docker.enable = true;
